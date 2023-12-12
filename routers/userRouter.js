@@ -1,21 +1,23 @@
 import express from 'express'
-import { adminAuthentication } from '../middlewares/adminAuth.js';
 import { authentication } from '../middlewares/userAuth.js';
+import {createUser, getMessages, getUser, loginUser, savePrompt, sendVerificationEmail, verifyUser} from '../controllers/userController.js';
 
 const UserRouter = express.Router();
 
 // define routes for the user.
 
 // login route
-UserRouter.post("/login",(req,res)=>{res.send("Reached Login user")})
+UserRouter.post("/login",loginUser)
 // signup route
-UserRouter.post("/register",(req,res)=>{res.send("Reached Register User")})
+UserRouter.post("/register",createUser)
 // verification route
-UserRouter.get("/verify",(req,res)=>{res.send("Reached Verify User")})
+UserRouter.get("/verify/:token",verifyUser)
 // resend mail route
-UserRouter.post("/resendmail",(req,res)=>{res.send("Reached Resend Mail to User")})
+UserRouter.post("/resendmail",sendVerificationEmail)
 // get details of the user (requires auth)
 UserRouter.use(authentication)
-UserRouter.get("/",(req,res)=>{res.send("Reached GetUser")})
+UserRouter.get("/",getUser)
+UserRouter.post("/prompt/save",savePrompt)
+UserRouter.get("/prompt/get",getMessages)
 
 export default UserRouter
