@@ -1,6 +1,6 @@
 import express from 'express'
 import { adminAuthentication } from '../middlewares/adminAuth.js';
-import { authentication } from '../middlewares/auth.js';
+import { authentication } from '../middlewares/userAuth.js';
 
 const UserRouter = express.Router();
 

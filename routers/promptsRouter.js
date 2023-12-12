@@ -4,8 +4,9 @@ const PromptRouter = express.Router();
 
 // define routes for the user.
 
-// get all the prompts of a user
+//  admin authentication
 PromptRouter.use(adminAuthentication)
+// get all the prompts of a user
 PromptRouter.get("/history/:id",(req,res)=>{res.send("sending Prompt History of A Specific User")})
-export default PromptRouter
 
+export default PromptRouter

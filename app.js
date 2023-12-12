@@ -2,7 +2,9 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import UserRouter from './routers/userRouter.js'
+import AdminRouter from './routers/adminRouter.js'
 import PromptRouter from './routers/promptsRouter.js'
+
 // get all the environment variables
 dotenv.config()
 
@@ -15,6 +17,7 @@ app.get('/', (req, res) => {
 })
 
 app.use("/user",UserRouter)
+app.use("/admin",AdminRouter)
 app.use("/prompts",PromptRouter)
 app.listen(port, () => {
   console.log(`Shhhhhhh.... Shrimp Talker is talking from the back-end! on port ${port}`)
