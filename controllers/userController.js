@@ -139,7 +139,7 @@ const sendVerificationEmail = async (req, res) => {
 }
 const getUser = async (req,res)=>{
 	try{
-		const user = UserModel.findOne({"_id":new mongoose.Types.ObjectId(req.user._id)},'-password').then(res=>res.toJSON()).then(data=>{
+		UserModel.findOne({"_id":new mongoose.Types.ObjectId(req.user._id)},'-password').then(res=>res.toJSON()).then(data=>{
 			if(data){
 				res.send({"success":"true","message":"User retireved successfully","data":data})
 			}
@@ -172,9 +172,12 @@ const getMessages = async(req,res)=>{
 const recoverPassword = async (req, res)=>{
 	try{
 		const user = UserModel.find(req.body)
-		console.log(req.body)
-		const token = jwt.sign({ "email":req.body.email }, process.env.JWT_SECRET)
-		const link = `${process.env.APP}/api/v1/user/newpassword/${token}`
+		if(!user){
+			res.json({"success":false,"message":"User does not exist"})
+			return;
+		}
+		const token = jwt.sign({ "email":user.email }, process.env.JWT_SECRET)
+		const link = `http://${process.env.APP}/recover/${token}`
 		const mailInfo = await sendMail(req.body.email, link, "Please click the link below or copy paste in browser to generate a new password for your account.")
 		if (!mailInfo) {
 			return res.json({ success: false, message: 'Error Sending Recovery Mail.' })
@@ -188,7 +191,19 @@ const recoverPassword = async (req, res)=>{
 		console.log(err);
 	}
 }
-
+const sendUserMail = async(req,res)=>{
+	const user = await UserModel.findOne({"_id": new mongoose.Types.ObjectId(req.user._id)})
+	if(!user){
+		res.json({"success":false,"message":"User does not exist"})
+	}
+	const mailinfo = await sendMail(req.body.to, "", req.body.body);
+	if(!mailinfo){
+		res.json({"success":false,"message":"Mail could not be sent"})
+	}
+	else{
+		res.json({"success":true, "message":"Mail Sent Successfully!"})
+	}
+}
 const newpassword = async (req,res)=>{
 	try{
 		const { token } = req.params
@@ -202,11 +217,11 @@ const newpassword = async (req,res)=>{
 			console.log(req.body.password);
 			console.log(hashedPassword);
 			await UserModel.updateOne(user, { $set: { password: hashedPassword } })
-			res.send({"success":"true", "message":"Password changed successfully, please login.."})
+			res.send({"success":true, "message":"Password changed successfully, please login.."})
 		}
 	}catch(err){
 		console.log(err);
-		res.send({"success":"false", "message":"Internal Server Error"})
+		res.send({"success":false, "message":err.message})
 	}
 }
-export { createUser, loginUser, verifyUser, sendVerificationEmail, getUser, savePrompt, getMessages, recoverPassword, newpassword }
+export { createUser, loginUser, verifyUser, sendVerificationEmail, getUser, savePrompt, getMessages, recoverPassword, newpassword, sendUserMail }

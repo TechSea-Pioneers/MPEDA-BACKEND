@@ -15,8 +15,13 @@ const sendMail = async (to, url, body) => {
 			from: `"Shrimp Talker 👨‍💻 <${process.env.MAIL}>`,
 			to,
 			subject: 'Do Not Reply - Email Verification ✔️',
-			html: `<h1>Welcome to the MPEDA's Shrimp Talker</h1>
+			html: url?`<h1>Welcome to the MPEDA's Shrimp Talker</h1>
                     <p>Hi there,</p>
+                    <p>${body}</p>
+                    <button><a href="${url}">Click Here!</a></button>
+                    <p><a href="${url}">${url}</a></p>
+                    <p>Thank you,</p>
+                    <p>MPEDA</p>`:`<h1>MPEDA's Shrimp Talker Has a Message to You</h1>
                     <p>${body}</p>
                     <button><a href="${url}">Click Here!</a></button>
                     <p><a href="${url}">${url}</a></p>

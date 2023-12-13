@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import UserRouter from './routers/userRouter.js'
 import AdminRouter from './routers/adminRouter.js'
 import PromptRouter from './routers/promptsRouter.js'
+import ExporterRouter from './routers/exporterRouter.js'
 import { connection } from './database/connection.js'
 import cors from 'cors'
 // get all the environment variables
@@ -27,6 +28,7 @@ app.get('/', (req, res) => {
 app.use("/api/v1/user",UserRouter)
 app.use("/api/v1/admin",AdminRouter)
 app.use("/api/v1/prompts",PromptRouter)
+app.use("/api/v1/exporter",ExporterRouter)
 
 // default port listening
 app.listen(port, () => {

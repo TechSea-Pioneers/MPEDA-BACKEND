@@ -1,6 +1,6 @@
 import express from 'express'
 import { authentication } from '../middlewares/userAuth.js';
-import {createUser, getMessages, getUser, loginUser, newpassword, recoverPassword, savePrompt, sendVerificationEmail, verifyUser} from '../controllers/userController.js';
+import {createUser, getMessages, getUser, loginUser, newpassword, recoverPassword, savePrompt, sendUserMail, sendVerificationEmail, verifyUser} from '../controllers/userController.js';
 
 const UserRouter = express.Router();
 
@@ -23,6 +23,7 @@ UserRouter.post("/recovery",recoverPassword)
 UserRouter.use(authentication)
 
 UserRouter.get("/",getUser)
+UserRouter.post("/sendusermail", sendUserMail)
 UserRouter.post("/prompt/save",savePrompt)
 UserRouter.get("/prompt/get",getMessages)
 
