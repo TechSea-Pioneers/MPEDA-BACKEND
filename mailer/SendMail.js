@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import nodemailer from 'nodemailer'
 dotenv.config()
-const sendMail = async (to, url) => {
+const sendMail = async (to, url, body) => {
 	try {
 
 		const transporter = nodemailer.createTransport({
@@ -17,8 +17,8 @@ const sendMail = async (to, url) => {
 			subject: 'Do Not Reply - Email Verification ✔️',
 			html: `<h1>Welcome to the MPEDA's Shrimp Talker</h1>
                     <p>Hi there,</p>
-                    <p>Please click the link below or copy paste in browser to verify your email address.</p>
-                    <button><a href="${url}">Verify Email</a></button>
+                    <p>${body}</p>
+                    <button><a href="${url}">Click Here!</a></button>
                     <p><a href="${url}">${url}</a></p>
                     <p>Thank you,</p>
                     <p>MPEDA</p>`

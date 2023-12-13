@@ -24,7 +24,7 @@ const createUser = async (req, res) => {
 		}
 		const token = jwt.sign({ _id: newUser._id }, process.env.JWT_SECRET)
 		const link = `${process.env.HOST}/api/v1/user/verify/${token}`
-		const mailInfo = await sendMail(email, link)
+		const mailInfo = await sendMail(email, link, "Please click the link below or copy paste in browser to verify your email address.")
 		if (!mailInfo) {
 			return res.json({ success: false, message: 'Error Creating User.' })
 		}
@@ -41,7 +41,6 @@ const createUser = async (req, res) => {
 		})
 	}
 }
-
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body
@@ -119,7 +118,7 @@ const sendVerificationEmail = async (req, res) => {
 		}
 		const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET)
 		const link = `${process.env.HOST}/api/user/verify/${token}`
-		const mailInfo = await sendMail(user.email, link)
+		const mailInfo = await sendMail(user.email, link , "Please click the link below or copy paste in browser to verify your email address.")
 		if (!mailInfo) {
 			return res.json({
 				success: false,
@@ -169,4 +168,45 @@ const getMessages = async(req,res)=>{
 		console.log(err);
 	}
 }
-export { createUser, loginUser, verifyUser, sendVerificationEmail, getUser, savePrompt, getMessages }
+
+const recoverPassword = async (req, res)=>{
+	try{
+		const user = UserModel.find(req.body)
+		console.log(req.body)
+		const token = jwt.sign({ "email":req.body.email }, process.env.JWT_SECRET)
+		const link = `${process.env.APP}/api/v1/user/newpassword/${token}`
+		const mailInfo = await sendMail(req.body.email, link, "Please click the link below or copy paste in browser to generate a new password for your account.")
+		if (!mailInfo) {
+			return res.json({ success: false, message: 'Error Sending Recovery Mail.' })
+		}
+		return res.json({
+			success: true,
+			message: 'Recovery Mail Sent!'
+		})
+
+	}catch(err){
+		console.log(err);
+	}
+}
+
+const newpassword = async (req,res)=>{
+	try{
+		const { token } = req.params
+		const data = jwt.verify(token, process.env.JWT_SECRET)
+		console.log(data)
+		const user = await UserModel.findOne({"email":data.email})
+		if (!user) {
+			return res.json({ success: false, message: 'User Not Found.' })
+		}else{
+			const hashedPassword = await bcrypt.hash(req.body.password, 10)
+			console.log(req.body.password);
+			console.log(hashedPassword);
+			await UserModel.updateOne(user, { $set: { password: hashedPassword } })
+			res.send({"success":"true", "message":"Password changed successfully, please login.."})
+		}
+	}catch(err){
+		console.log(err);
+		res.send({"success":"false", "message":"Internal Server Error"})
+	}
+}
+export { createUser, loginUser, verifyUser, sendVerificationEmail, getUser, savePrompt, getMessages, recoverPassword, newpassword }
